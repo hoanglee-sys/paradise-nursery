@@ -1,0 +1,9 @@
+/* Background image for the Paradise Nursery landing page */
+.landing-page-background {
+  background-image: url('https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=1000&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  width: 100vw;
+}
