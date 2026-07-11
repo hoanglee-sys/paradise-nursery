@@ -1,31 +1,72 @@
 import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { removeItemFromCart, updateQuantity } from './CartSlice';
 
-const CartItem = () => {
+const CartItem = ({ onContinueShopping }) => {
+  const cartItems = useSelector(state => state.cart.items);
+  const dispatch = useDispatch();
+
+  const calculateTotalAmount = () => {
+    let total = 0;
+    cartItems.forEach(item => {
+      total += item.price * item.quantity;
+    });
+    return total;
+  };
+
+  const calculateTotalCost = (item) => {
+    return item.price * item.quantity;
+  };
+
+  const handleIncrement = (item) => {
+    dispatch(updateQuantity({ id: item.id, quantity: item.quantity + 1 }));
+  };
+
+  const handleDecrement = (item) => {
+    if (item.quantity > 1) {
+      dispatch(updateQuantity({ id: item.id, quantity: item.quantity - 1 }));
+    } else {
+      dispatch(removeItemFromCart({ id: item.id }));
+    }
+  };
+
+  const handleRemove = (item) => {
+    dispatch(removeItemFromCart({ id: item.id }));
+  };
+
+  const handleCheckout = () => {
+    alert('Coming Soon');
+  };
+
   return (
     <div className="shopping-cart-page">
-      <h2>Total Cart Amount: $100.00</h2>
-      
-      <div className="cart-item">
-        <img src="thumbnail.jpg" alt="Plant Thumbnail" />
-        <h3>Beautiful Fern</h3>
-        <p>Unit Price: $10.00</p>
-        <p>Total Cost for this plant: $20.00</p>
-        
-        <div className="quantity-controls">
-          <button className="decrease-btn"> Decrease - </button>
-          <span> Quantity: 2 </span>
-          <button className="increase-btn"> Increase + </button>
-        </div>
-        
-        <button className="delete-btn">Delete</button>
+      <h2>Total Cart Amount: ${calculateTotalAmount()}</h2>
+
+      <div>
+        {cartItems.map(item => (
+          <div key={item.id} className="cart-item">
+            <img src={item.image} alt={item.name} />
+            <h3>{item.name}</h3>
+            <p>Unit Price: ${item.price}</p>
+            <p>Total Cost for this plant: ${calculateTotalCost(item)}</p>
+
+            <div className="quantity-controls">
+              <button className="decrease-btn" onClick={() => handleDecrement(item)}> - </button>
+              <span> Quantity: {item.quantity} </span>
+              <button className="increase-btn" onClick={() => handleIncrement(item)}> + </button>
+            </div>
+
+            <button className="delete-btn" onClick={() => handleRemove(item)}>Delete</button>
+          </div>
+        ))}
       </div>
 
       <div className="cart-actions">
-        <button className="continue-shopping-btn" onClick={() => console.log('Back to products')}>
+        <button className="continue-shopping-btn" onClick={(e) => onContinueShopping(e)}>
           Continue Shopping
         </button>
-        <button className="checkout-btn">
-          Checkout (Coming Soon)
+        <button className="checkout-btn" onClick={handleCheckout}>
+          Checkout
         </button>
       </div>
     </div>
